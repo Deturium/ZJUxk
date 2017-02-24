@@ -1,0 +1,63 @@
+#showbutton, #hidebutton {
+    z-index: 100;
+    position: fixed;
+    top: 0px;
+    right: 40px;
+    width: 64px;
+    height: 20px;
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    background-color: #A7C942;
+    color: #ffffff;
+    opacity: 0.9;
+}
+
+#timesheet1, #timesheet2 {
+    position: fixed;
+    top: 25px;
+    z-index: 100;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    border-collapse: collapse;
+    opacity: 0.9;
+    table-layout: fixed;
+}
+
+#timesheet1 {
+    right: 430px;
+}
+
+#timesheet2 {
+    right: 40px;
+}
+
+#timesheet1 td, #timesheet1 th, #timesheet2 td, #timesheet2 th {
+    border: 1px solid #98bf21;
+    padding: 3px 4px 3px 4px;
+    height: 35px;
+}
+
+#timesheet1 th, #timesheet2 th {
+    text-align: center;
+    background-color: #A7C942;
+    color: #ffffff;
+}
+
+#timesheet1 td, #timesheet2 td {
+    font-size: 0.7em;
+    width: 50px;
+    height: 38px;
+    /*white-space: nowrap;*/
+    /*overflow: hidden;*/
+    background-color: rgba(234,242,211, 0.8);
+    color: #000000;
+}
+
+#timesheet1 td.selected, #timesheet2 td.selected {
+    background-color: rgba(0,255,255, 0.5);
+}
+
+#timesheet1 td.conflict, #timesheet2 td.conflict {
+    background-color: rgba(245,100,100, 0.8);
+}
