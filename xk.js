@@ -30,42 +30,46 @@ function showClassTable() {
     for (let i = 0; i < cList.length; i++) {
         var cNode = $(cList[i]);
         var cName = cNode.find("a.jump").html().replace(/\([a-zA-Z0-9]+\)([^-]+)-.+/ig, "$1");
-        var cTime = cNode.find("p.time").html().split("<br>");
-        var cTerm = cNode.find("p.xxq" ).html();
 
-        for (let j = 0; j < cTime.length; j++) {
-            var day  = cTime[j].match(/一|二|三|四|五|六|日/);
-            var time = cTime[j].match(/\d+/g);
-            if (cTerm.search("春|秋") != -1) {
-                var node = $("#timesheet1 tr:eq("+Number(time[0])+") td:eq("+DayTo[day]+")");
-                node.attr("rowspan", time.length);
+        cNode.find("div.item").each( function() {
 
-                //handle conflict
-                if (node.html() == '&nbsp;') {
-                    node.html(cName.slice(0, 12));
-                } else {
-                    node.html(node.html().slice(0, 5) + '&amp;<br />' + cName.slice(0, 6))
+            var cTime = $(this).find("p.time").html().split("<br>");
+            var cTerm = $(this).find("p.xxq" ).html();
+
+            for (let j = 0; j < cTime.length; j++) {
+                var day  = cTime[j].match(/一|二|三|四|五|六|日/);
+                var time = cTime[j].match(/\d+/g);
+                if (cTerm.search("春|秋") != -1) {
+                    var node = $("#timesheet1 tr:eq("+Number(time[0])+") td:eq("+DayTo[day]+")");
+                    node.attr("rowspan", time.length);
+
+                    //handle conflict
+                    if (node.html() == '&nbsp;') {
+                        node.html(cName.slice(0, 12));
+                    } else {
+                        node.html(node.html().slice(0, 5) + '&amp;<br />' + cName.slice(0, 6))
+                    }
+
+                    for (let k = 1; k < time.length; k++) {
+                        $("#timesheet1 tr:eq("+Number(time[k])+") td:eq("+DayTo[day]+")").css('display', 'none');
+                    }
                 }
+                if (cTerm.search("冬|夏") != -1) {
+                    node = $("#timesheet2 tr:eq("+Number(time[0])+") td:eq("+DayTo[day]+")");
+                    node.attr("rowspan", time.length);
 
-                for (let k = 1; k < time.length; k++) {
-                    $("#timesheet1 tr:eq("+Number(time[k])+") td:eq("+DayTo[day]+")").css('display', 'none');
+                    if (node.html() == '&nbsp;') {
+                        node.html(cName.slice(0, 12));
+                    } else {
+                        node.html(node.html().slice(0, 5) + '&amp;<br />' + cName.slice(0, 6))
+                    }
+
+                    for (let k = 1; k < time.length; k++) {
+                        $("#timesheet2 tr:eq("+Number(time[k])+") td:eq("+DayTo[day]+")").css('display', 'none');
+                    }
                 }
             }
-            if (cTerm.search("冬|夏") != -1) {
-                node = $("#timesheet2 tr:eq("+Number(time[0])+") td:eq("+DayTo[day]+")");
-                node.attr("rowspan", time.length);
-
-                if (node.html() == '&nbsp;') {
-                    node.html(cName.slice(0, 12));
-                } else {
-                    node.html(node.html().slice(0, 5) + '&amp;<br />' + cName.slice(0, 6))
-                }
-
-                for (let k = 1; k < time.length; k++) {
-                    $("#timesheet2 tr:eq("+Number(time[k])+") td:eq("+DayTo[day]+")").css('display', 'none');
-                }
-            }
-        }
+        })
     }
 };
 
