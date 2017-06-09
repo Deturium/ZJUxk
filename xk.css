@@ -7,10 +7,11 @@
     height: 20px;
     cursor: pointer;
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.1em;
     text-align: center;
     background-color: #A7C942;
     color: #ffffff;
-    opacity: 0.9;
+    opacity: 0.95;
 }
 
 #timesheet1, #timesheet2 {
@@ -18,9 +19,10 @@
     top: 25px;
     z-index: 100;
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.2em;
     text-align: center;
     border-collapse: collapse;
-    opacity: 0.9;
+    opacity: 0.95;
     table-layout: fixed;
 }
 
@@ -39,6 +41,7 @@
 }
 
 #timesheet1 th, #timesheet2 th {
+    font-size: 0.7em;
     text-align: center;
     background-color: #A7C942;
     color: #ffffff;
