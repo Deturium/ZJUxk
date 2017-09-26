@@ -1,144 +1,138 @@
 'use strict'
 
+const h = window.hQuery
+// const log = console.log.bind(console)
 const DayTo = { "一":0, "二":1, "三":2, "四":3, "五":4, "六":5, "日":6 };
 
-function addTimeSheet(a) {
-    $("body").append("<table id='timesheet"+a+"'></table>")
+function addTimeSheet(num) {
 
-    var term = a == 1 ? "春秋" : "冬夏";
-    $("#timesheet"+a).append("<tr><th>"+term+"</th></tr>");
+    let tableHtml = `<table id='timesheet${num}'>`
+
+    let term = num === 1 ? "春秋" : "冬夏";
+    const weekday = ["一", "二", "三", "四", "五", "六", "日"];
+
+    tableHtml += `<tr><th>${term}</th>${weekday.map((day) => {
+        return `<th>${day}</th>`
+    }).join('')}</tr>`;
 
     for (let i = 1; i < 14; i++) {
-        $("#timesheet"+a).append("<tr><th>" + i + "</th></tr>");
-        // if (i == 5 || i == 10)
-        //     $("#timesheet"+a).append("<br />");
+        tableHtml += `<tr><th>${i}</th>${weekday.map((_, j) => {
+            return `<td class="row${i} col${j}">&nbsp;</td>`
+        }).join('')}</tr>`;
     }
 
-    const weekday = ["一", "二", "三", "四", "五", "六", "日"];
-    for (let k = 0; k < 7; k++) {
-        $("#timesheet"+a+" tr:first").append("<th>" + weekday[k] + "</th>");
-        $("#timesheet"+a+" tr:gt(0)").append("<td>&nbsp;</td>");
-    }
-};
+    h('body').append(tableHtml + '</table>')
+}
 
 function showClassTable() {
-    addTimeSheet(1);
-    addTimeSheet(2);
+    addTimeSheet(1)
+    addTimeSheet(2)
 
-    var cList = $("div.outer_xkxx_list");
+    h("div.outer_xkxx_list").each(function (i, cNode) {
+        let cName = h(cNode).find("a.jump").html().replace(/\([a-zA-Z0-9]+\)([^-]+)-.+/ig, "$1");
 
-    for (let i = 0; i < cList.length; i++) {
-        var cNode = $(cList[i]);
-        var cName = cNode.find("a.jump").html().replace(/\([a-zA-Z0-9]+\)([^-]+)-.+/ig, "$1");
+        h(cNode).find("div.item").each( function(i, item) {
+            let cTerm  = h(item).find("p.xxq" ).html()
+            let cTimes = h(item).find("p.time").html().split("<br>")
 
-        cNode.find("div.item").each( function() {
+            cTimes.forEach(function (cTime) {
+                let day  = cTime.match(/[一二三四五六日]/)
+                let time = cTime.match(/\d+/g)
 
-            var cTime = $(this).find("p.time").html().split("<br>");
-            var cTerm = $(this).find("p.xxq" ).html();
+                let addNode2Sheet = function (num) {
+                    let node = h(`#timesheet${num} .row${time[0]}.col${DayTo[day]}`)
+                    node.attr("rowspan", time.length)
 
-            for (let j = 0; j < cTime.length; j++) {
-                var day  = cTime[j].match(/一|二|三|四|五|六|日/);
-                var time = cTime[j].match(/\d+/g);
-                if (cTerm.search("春|秋") != -1) {
-                    var node = $("#timesheet1 tr:eq("+Number(time[0])+") td:eq("+DayTo[day]+")");
-                    node.attr("rowspan", time.length);
-
-                    //handle conflict
-                    if (node.html() == '&nbsp;') {
-                        node.html(cName.slice(0, 12));
+                    // handle conflict
+                    if (node.html() === '&nbsp;') {
+                        node.html(cName.slice(0, 12))
                     } else {
                         node.html(node.html().slice(0, 5) + '&amp;<br />' + cName.slice(0, 6))
                     }
 
-                    for (let k = 1; k < time.length; k++) {
-                        $("#timesheet1 tr:eq("+Number(time[k])+") td:eq("+DayTo[day]+")").css('display', 'none');
+                    for (let i = 1; i < time.length; i++) {
+                        h(`#timesheet${num} .row${time[i]}.col${DayTo[day]}`).hide()
                     }
                 }
-                if (cTerm.search("冬|夏") != -1) {
-                    node = $("#timesheet2 tr:eq("+Number(time[0])+") td:eq("+DayTo[day]+")");
-                    node.attr("rowspan", time.length);
 
-                    if (node.html() == '&nbsp;') {
-                        node.html(cName.slice(0, 12));
-                    } else {
-                        node.html(node.html().slice(0, 5) + '&amp;<br />' + cName.slice(0, 6))
-                    }
-
-                    for (let k = 1; k < time.length; k++) {
-                        $("#timesheet2 tr:eq("+Number(time[k])+") td:eq("+DayTo[day]+")").css('display', 'none');
-                    }
+                if (cTerm.search("春|秋") !== -1) {
+                    addNode2Sheet(1)
                 }
-            }
+                if (cTerm.search("冬|夏") !== -1) {
+                    addNode2Sheet(2)
+                }
+            })
         })
-    }
-};
+    })
+}
 
 function highLight() {
-    $("#yhgnPage").bind('DOMNodeInserted', function() {
-        $('tr.body_tr').mouseover(function() {
-            var cTerm = $(this).children("td.xxq" ).html();
-            var cTime = $(this).children("td.sksj").html().split("<br>");
+    h("#yhgnPage").on('DOMNodeInserted', function() {
+        h('tr.body_tr').on('mouseover', function() {
+            let cTerm  = h(this).find("td.xxq" ).html()
+            let cTimes = h(this).find("td.sksj").html().split("<br>")
 
-            for (let j = 0; j < cTime.length; j++) {
-                var day  = cTime[j].match(/一|二|三|四|五|六|日/);
-                var time = cTime[j].match(/\d+/g);
+            cTimes.forEach(function (cTime) {
+                let day  = cTime.match(/[一二三四五六日]/)
+                let time = cTime.match(/\d+/g)
+                if (!time.length) {
+                    return
+                }
                 for (let k = 0; k < time.length; k++) {
-                    if (cTerm.search("春|秋") != -1) {
-                        var t = Number(time[k]);
-                        var node = $("#timesheet1 tr:eq("+t+") td:eq("+DayTo[day]+")");
-                        while (node.css('display') == 'none') {
-                            t--;
-                            node = $("#timesheet1 tr:eq("+t+") td:eq("+DayTo[day]+")");
+                    let changeClass = function (num) {
+                        let t = Number(time[k]);
+                        let node = h(`#timesheet${num} .row${t}.col${DayTo[day]}`)
+                        while (node.css('display') === 'none') {
+                            t--
+                            node = h(`#timesheet${num} .row${t}.col${DayTo[day]}`)
                         }
-                        if (node.html() == '&nbsp;')
-                            node.addClass("selected");
+                        if (node.html() === '&nbsp;')
+                            node.addClass("selected")
                         else
-                            node.addClass("conflict");
+                            node.addClass("conflict")
                     }
-                    if (cTerm.search("夏|冬") != -1) {
-                        t = Number(time[k]);
-                        node = $("#timesheet2 tr:eq("+t+") td:eq("+DayTo[day]+")");
-                        while (node.css('display') == 'none') {
-                            t--;
-                            node = $("#timesheet2 tr:eq("+t+") td:eq("+DayTo[day]+")");
-                        }
-                        if (node.html() == '&nbsp;')
-                            node.addClass("selected");
-                        else
-                            node.addClass("conflict");
+
+                    if (cTerm.search("春|秋") !== -1) {
+                        changeClass(1)
+                    }
+                    if (cTerm.search("夏|冬") !== -1) {
+                        changeClass(2)
                     }
                 }
+            })
+        });
+
+        h('tr.body_tr').on('mouseleave', function() {
+            h(".selected").removeClass("selected");
+            h(".conflict").removeClass("conflict");
+        });
+    });
+}
+
+(function () {
+    h("body").append("<div id='showbutton'>show</div>");
+
+    let funcSwitch = function(func1, func2) {
+        let status = true
+        return function() {
+            if (status) {
+                func1()
+            } else {
+                func2()
             }
+            status = !status
+        }
+    }
 
-        });
-        $('tr.body_tr').mouseleave(function() {
-            $(".selected").removeClass("selected");
-            $(".conflict").removeClass("conflict");
-        });
-    });
-};
-
-function show() {
-    $('#showbutton').remove();
-    $("body").append("<div id='hidebutton'>hide</div>");
-    $("#hidebutton").click(function() {
-        hide();
-    });
-    showClassTable();
-    highLight();
-}
-
-function hide() {
-    $('#timesheet1').remove();
-    $('#timesheet2').remove();
-    $('#hidebutton').remove();
-    $("body").append("<div id='showbutton'>show</div>");
-    $("#showbutton").click(function() {
-        show();
-    });
-}
-
-$("body").append("<div id='showbutton'>show</div>");
-$("#showbutton").click(function() {
-    show();
-});
+    h("#showbutton").on('click', funcSwitch(
+        function () {
+            h('#showbutton').text('hide')
+            showClassTable();
+            highLight();
+        },
+        function () {
+            h('#showbutton').text('show')
+            h('#timesheet1, #timesheet2').remove();
+        }
+    ))
+})();

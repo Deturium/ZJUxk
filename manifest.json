@@ -1,7 +1,7 @@
 {
     "name": "ZJU选课",
     "description": "ZJU新选课系统选课插件",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "manifest_version": 2,
     "icons": {
 
@@ -10,7 +10,7 @@
 
     },
 	"content_scripts": [{
-		"js": [ "jquery.js", "xk.js" ],
+		"js": [ "Hquery.js", "xk.js" ],
         "css": ["xk.css"],
 		"matches": [ "*://10.203.2.135/*", "*://10.202.78.14/*", "*://10.203.2.136/*" ],
         "run_at": "document_end"

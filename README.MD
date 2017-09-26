@@ -2,23 +2,26 @@
 
 Chrome插件，展示小课表
 
-![show](ZJUxk-1.png)
-
-### 使用
-1. 在github左上角选择 Clone or download，下载解压 
-2. 打开Chrome，输入chrome://extensions/，或者在菜单里选择 更多工具 -> 扩展程序
-3. 勾选 "开发者模式"，选择 "加载已解压的拓展程序"，选中解压的文件夹
-4. 登陆新选课系统愉快的选课吧 >. <
+![show](img/ZJUxk-1.png)
 
 ### 更新
+
+v1.2.0 全部重构，使用自己的hQuery取代jQuery，转向ES6
 
 v1.1.1 更新css，修复win下字体过小问题
 
 v1.1.0 修复多志愿显示不全问题
 
+### 使用
+
+1. 在github右上角选择 Clone or download，下载解压
+2. 打开Chrome，输入chrome://extensions/，或者在菜单里选择 更多工具 -> 扩展程序
+3. 勾选 "开发者模式"，选择 "加载已解压的拓展程序"，选中解压的文件夹
+4. 登陆新选课系统愉快的选课吧 >. <
+
 ### 高亮
 
-![show](ZJUxk-2.png)
+![show](img/ZJUxk-2.png)
 
 当鼠标停在选课系统的某门课上时，会高亮课表上相应的上课时间
 

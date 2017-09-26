@@ -1,23 +1,23 @@
-#showbutton, #hidebutton {
-    z-index: 100;
+#showbutton {
     position: fixed;
-    top: 0px;
+    top: 0;
     right: 40px;
+    z-index: 10000;
     width: 64px;
     height: 20px;
     cursor: pointer;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1em;
     text-align: center;
-    background-color: #A7C942;
     color: #ffffff;
+    background-color: #A7C942;
     opacity: 0.95;
 }
 
 #timesheet1, #timesheet2 {
     position: fixed;
     top: 25px;
-    z-index: 100;
+    z-index: 10000;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1.2em;
     text-align: center;
