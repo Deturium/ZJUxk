@@ -1,86 +1,127 @@
 'use strict'
 
-const h = window.hQuery
-// const log = console.log.bind(console)
-const DayTo = { "一":0, "二":1, "三":2, "四":3, "五":4, "六":5, "日":6 };
+// for debug
+const log = console.log.bind(console)
 
-function addTimeSheet(num) {
+
+const h = window.hQuery
+
+const DayTo = { "一": 0, "二": 1, "三": 2, "四": 3, "五": 4, "六": 5, "日": 6 };
+
+function makeTimeSheet(num) {
 
     let tableHtml = `<table id='timesheet${num}'>`
 
     let term = num === 1 ? "春秋" : "冬夏";
     const weekday = ["一", "二", "三", "四", "五", "六", "日"];
 
-    tableHtml += `<tr><th>${term}</th>${weekday.map((day) => {
-        return `<th>${day}</th>`
-    }).join('')}</tr>`;
+    tableHtml += `<tr><th>${term}</th>${weekday.map((day) =>
+        `<th>${day}</th>`
+    ).join('')}</tr>`;
 
     for (let i = 1; i < 14; i++) {
-        tableHtml += `<tr><th>${i}</th>${weekday.map((_, j) => {
-            return `<td class="row${i} col${j}">&nbsp;</td>`
-        }).join('')}</tr>`;
+        tableHtml += `<tr><th>${i}</th>${weekday.map((_, j) =>
+            `<td class="row${i} col${j}">&nbsp;</td>`
+        ).join('')}</tr>`;
     }
 
     h('body').append(tableHtml + '</table>')
 }
 
-function showClassTable() {
-    addTimeSheet(1)
-    addTimeSheet(2)
+function parseCourse() {
+    let courses = new Map()
 
-    h("div.outer_xkxx_list").each(function (i, cNode) {
-        let cName = h(cNode).find("a.jump").html().replace(/\([a-zA-Z0-9]+\)([^-]+)-.+/ig, "$1");
+    h("div.outer_xkxx_list").each(function (i, item) {
+        let title = h(item).find("a.jump")
+            .html()
+            .replace(/\(([a-zA-Z0-9]+)\)([^-]+)-(\d\.?\d).+/ig, "$1 $2 $3")
+            .split(' ')
 
-        h(cNode).find("div.item").each( function(i, item) {
-            let cTerm  = h(item).find("p.xxq" ).html()
-            let cTimes = h(item).find("p.time").html().split("<br>")
+        let [id, name, credit] = title
 
-            cTimes.forEach(function (cTime) {
-                let day  = cTime.match(/[一二三四五六日]/)
-                let time = cTime.match(/\d+/g)
+        courses.set(name, [])
 
-                let addNode2Sheet = function (num) {
-                    let node = h(`#timesheet${num} .row${time[0]}.col${DayTo[day]}`)
-                    node.attr("rowspan", time.length)
+        h(item).find("div.item").each(function (i, item) {
+            let course = h(item)
 
-                    // handle conflict
-                    if (node.html() === '&nbsp;') {
-                        node.html(cName.slice(0, 12))
-                    } else {
-                        node.html(node.html().slice(0, 5) + '&amp;<br />' + cName.slice(0, 6))
-                    }
+            let term = course.find("p.xxq")
+                .html()
 
-                    for (let i = 1; i < time.length; i++) {
-                        h(`#timesheet${num} .row${time[i]}.col${DayTo[day]}`).hide()
-                    }
-                }
+            let teachers = course.find("p.teachers")
+                .html()
+                .split("<br>")
+                .map(s => s.trim())
 
-                if (cTerm.search("春|秋") !== -1) {
-                    addNode2Sheet(1)
-                }
-                if (cTerm.search("冬|夏") !== -1) {
-                    addNode2Sheet(2)
-                }
-            })
+            let times = course.find("p.time")
+                .html()
+                .split("<br>")
+                .map(s => s.trim())
+
+            let addrs = course.find("p.addr")
+                .html()
+                .split("<br>")
+                .map(s => s.trim())
+
+            courses.get(name).push(
+                { id, credit, term, teachers, times, addrs }
+            )
         })
     })
+
+    return courses
 }
 
-function highLight() {
-    h("#yhgnPage").on('DOMNodeInserted', function() {
-        h('tr.body_tr').on('mouseover', function() {
-            let cTerm  = h(this).find("td.xxq" ).html()
-            let cTimes = h(this).find("td.sksj").html().split("<br>")
+function showCourseTable() {
+    makeTimeSheet(1)
+    makeTimeSheet(2)
 
-            cTimes.forEach(function (cTime) {
-                let day  = cTime.match(/[一二三四五六日]/)
-                let time = cTime.match(/\d+/g)
-                if (!time.length) {
-                    return
+    let courses = parseCourse()
+
+    for (let [name, course] of courses) {
+        for (let c of course) {
+
+            c.times.forEach(function (time) {
+                let day = time.match(/[一二三四五六日]/)
+                let nth = time.match(/\d+/g)
+
+                let draw = (num) => {
+                    let td = h(`#timesheet${num} .row${nth[0]}.col${DayTo[day]}`)
+                    td.attr("rowspan", nth.length)
+
+                    // handle conflict
+                    if (td.html() === '&nbsp;') {
+                        td.html(name.slice(0, 12))
+                    } else {
+                        td.html(td.html().slice(0, 5) + '&amp;<br />' + name.slice(0, 6))
+                    }
+
+                    for (let i = 1; i < nth.length; i++) {
+                        h(`#timesheet${num} .row${nth[i]}.col${DayTo[day]}`).hide()
+                    }
                 }
-                for (let k = 0; k < time.length; k++) {
-                    let changeClass = function (num) {
-                        let t = Number(time[k]);
+
+                if (c.term.search("春|秋") !== -1) draw(1)
+                if (c.term.search("冬|夏") !== -1) draw(2)
+            })
+        }
+    }
+}
+
+function enableHighLight() {
+    h("#yhgnPage").on('DOMNodeInserted', function () {
+        h('tr.body_tr').on('mouseover', function () {
+            let term  = h(this).find("td.xxq").html()
+            let times = h(this).find("td.sksj").html().split("<br>")
+
+            times.forEach(function (time) {
+                let day = time.match(/[一二三四五六日]/)
+                let nth = time.match(/\d+/g)
+                
+                if (!nth.length) return
+
+                for (let k = 0; k < nth.length; k++) {
+                    let highLight = function (num) {
+                        let t = parseInt(nth[k]);
                         let node = h(`#timesheet${num} .row${t}.col${DayTo[day]}`)
                         while (node.css('display') === 'none') {
                             t--
@@ -92,17 +133,13 @@ function highLight() {
                             node.addClass("conflict")
                     }
 
-                    if (cTerm.search("春|秋") !== -1) {
-                        changeClass(1)
-                    }
-                    if (cTerm.search("夏|冬") !== -1) {
-                        changeClass(2)
-                    }
+                    if (term.search("春|秋") !== -1) highLight(1)
+                    if (term.search("夏|冬") !== -1) highLight(2)
                 }
             })
         });
 
-        h('tr.body_tr').on('mouseleave', function() {
+        h('tr.body_tr').on('mouseleave', function () {
             h(".selected").removeClass("selected");
             h(".conflict").removeClass("conflict");
         });
@@ -112,9 +149,9 @@ function highLight() {
 (function () {
     h("body").append("<div id='showbutton'>show</div>");
 
-    let funcSwitch = function(func1, func2) {
+    let switchFunc = function (func1, func2) {
         let status = true
-        return function() {
+        return function () {
             if (status) {
                 func1()
             } else {
@@ -124,11 +161,11 @@ function highLight() {
         }
     }
 
-    h("#showbutton").on('click', funcSwitch(
+    h("#showbutton").on('click', switchFunc(
         function () {
             h('#showbutton').text('hide')
-            showClassTable();
-            highLight();
+            showCourseTable();
+            enableHighLight();
         },
         function () {
             h('#showbutton').text('show')
