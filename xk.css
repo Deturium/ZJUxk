@@ -1,7 +1,8 @@
 #h-showbutton, 
 #h-container {
     position: fixed;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Lato', Arial;
+    font-size: 13px;
     text-align: center;
     z-index: 10000;
     opacity: 0.95;
@@ -27,29 +28,28 @@
 #timesheet1,
 #timesheet2 {
     float: right;
-    font-size: 1.2em;
     border-collapse: collapse;
     table-layout: fixed;
 }
 
 #h-container td,
 #h-container th {
-    padding: 3px 4px 3px 4px;
-    font-size: 0.7em;
-    text-align: center;
     width: 48px;
-    /* td */
-    height: 37px;
+    height: 36px;
+    padding: 3px;
     /*white-space: nowrap;*/
     /*overflow: hidden;*/
+    font-size: 12px;
+    text-align: center;
     color: #222;
     background-color: rgba(234,242,211, 0.8);
     border: 1px solid #98bf21;
 }
 
 #h-container th {
-    width: 37px;
-    height: 30px;
+    width: 36px;
+    height: 28px;
+    font-size: 11px;
     color: #fff;
     background-color: #A7C942;
 }
