@@ -1,67 +1,63 @@
-#showbutton {
+#h-showbutton, 
+#h-container {
     position: fixed;
-    top: 0;
-    right: 40px;
-    z-index: 10000;
-    width: 64px;
-    height: 20px;
-    cursor: pointer;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 1em;
     text-align: center;
-    color: #ffffff;
-    background-color: #A7C942;
+    z-index: 10000;
     opacity: 0.95;
 }
 
-#timesheet1, #timesheet2 {
-    position: fixed;
+#h-showbutton {
+    top: 0;
+    right: 40px;
+    width: 64px;
+    height: 20px;
+    line-height: 20px;
+    color: #fff;
+    background-color: #A7C942;
+    cursor: pointer;
+}
+
+#h-container {
     top: 25px;
-    z-index: 10000;
-    font-family: Arial, Helvetica, sans-serif;
+    right: 40px;
+    pointer-events: none;
+}
+
+#timesheet1,
+#timesheet2 {
+    float: right;
     font-size: 1.2em;
-    text-align: center;
     border-collapse: collapse;
-    opacity: 0.95;
     table-layout: fixed;
 }
 
-#timesheet1 {
-    right: 430px;
-}
-
-#timesheet2 {
-    right: 40px;
-}
-
-#timesheet1 td, #timesheet1 th, #timesheet2 td, #timesheet2 th {
-    border: 1px solid #98bf21;
+#h-container td,
+#h-container th {
     padding: 3px 4px 3px 4px;
-    height: 35px;
-}
-
-#timesheet1 th, #timesheet2 th {
-    height: 30px;
     font-size: 0.7em;
     text-align: center;
-    background-color: #A7C942;
-    color: #ffffff;
-}
-
-#timesheet1 td, #timesheet2 td {
-    font-size: 0.7em;
-    width: 50px;
-    height: 38px;
+    width: 48px;
+    /* td */
+    height: 37px;
     /*white-space: nowrap;*/
     /*overflow: hidden;*/
+    color: #222;
     background-color: rgba(234,242,211, 0.8);
-    color: #000000;
+    border: 1px solid #98bf21;
 }
 
-#timesheet1 td.selected, #timesheet2 td.selected {
+#h-container th {
+    width: 37px;
+    height: 30px;
+    color: #fff;
+    background-color: #A7C942;
+}
+
+#h-container .selected {
     background-color: rgba(0,255,255, 0.5);
 }
 
-#timesheet1 td.conflict, #timesheet2 td.conflict {
+#h-container .conflict {
     background-color: rgba(245,100,100, 0.8);
 }

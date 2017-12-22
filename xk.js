@@ -12,7 +12,7 @@ function makeTimeSheet(num) {
 
     let tableHtml = `<table id='timesheet${num}'>`
 
-    let term = num === 1 ? "春秋" : "冬夏";
+    const term = num === 1 ? "春秋" : "冬夏";
     const weekday = ["一", "二", "三", "四", "五", "六", "日"];
 
     tableHtml += `<tr><th>${term}</th>${weekday.map((day) =>
@@ -25,47 +25,49 @@ function makeTimeSheet(num) {
         ).join('')}</tr>`;
     }
 
-    h('body').append(tableHtml + '</table>')
+    h('#h-container').append(tableHtml + '</table>')
 }
 
 function parseCourse() {
-    let courses = new Map()
+    const courses = new Map()
 
     h("div.outer_xkxx_list").each(function (i, item) {
-        let title = h(item).find("a.jump")
+        const title = h(item).find("a.jump")
             .html()
             .replace(/\(([a-zA-Z0-9]+)\)([^-]+)-(\d\.?\d).+/ig, "$1 $2 $3")
             .split(' ')
 
-        let [id, name, credit] = title
+        const [id, name, credit] = title
 
-        courses.set(name, [])
+        const courseList = []
 
         h(item).find("div.item").each(function (i, item) {
-            let course = h(item)
+            const course = h(item)
 
-            let term = course.find("p.xxq")
+            const term = course.find("p.xxq")
                 .html()
 
-            let teachers = course.find("p.teachers")
-                .html()
-                .split("<br>")
-                .map(s => s.trim())
-
-            let times = course.find("p.time")
+            const teachers = course.find("p.teachers")
                 .html()
                 .split("<br>")
                 .map(s => s.trim())
 
-            let addrs = course.find("p.addr")
+            const times = course.find("p.time")
                 .html()
                 .split("<br>")
                 .map(s => s.trim())
 
-            courses.get(name).push(
+            const addrs = course.find("p.addr")
+                .html()
+                .split("<br>")
+                .map(s => s.trim())
+        
+            courseList.push(
                 { id, credit, term, teachers, times, addrs }
             )
         })
+
+        courses.set(name, courseList)
     })
 
     return courses
@@ -83,6 +85,10 @@ function showCourseTable() {
             c.times.forEach(function (time) {
                 let day = time.match(/[一二三四五六日]/)
                 let nth = time.match(/\d+/g)
+
+                // maybe null
+                if (!(day && nth))
+                    return
 
                 let draw = (num) => {
                     let td = h(`#timesheet${num} .row${nth[0]}.col${DayTo[day]}`)
@@ -110,17 +116,17 @@ function showCourseTable() {
 function enableHighLight() {
     h("#yhgnPage").on('DOMNodeInserted', function () {
         h('tr.body_tr').on('mouseover', function () {
-            let term  = h(this).find("td.xxq").html()
-            let times = h(this).find("td.sksj").html().split("<br>")
+            const term  = h(this).find("td.xxq").html()
+            const times = h(this).find("td.sksj").html().split("<br>")
 
             times.forEach(function (time) {
-                let day = time.match(/[一二三四五六日]/)
-                let nth = time.match(/\d+/g)
+                const day = time.match(/[一二三四五六日]/)
+                const nth = time.match(/\d+/g)
                 
                 if (!nth.length) return
 
                 for (let k = 0; k < nth.length; k++) {
-                    let highLight = function (num) {
+                    const highLight = function (num) {
                         let t = parseInt(nth[k]);
                         let node = h(`#timesheet${num} .row${t}.col${DayTo[day]}`)
                         while (node.css('display') === 'none') {
@@ -147,9 +153,9 @@ function enableHighLight() {
 }
 
 (function () {
-    h("body").append("<div id='showbutton'>show</div>");
+    h("body").append("<div id='h-showbutton'>show</div><div id='h-container'></div>");
 
-    let switchFunc = function (func1, func2) {
+    const switchFunc = function (func1, func2) {
         let status = true
         return function () {
             if (status) {
@@ -161,14 +167,14 @@ function enableHighLight() {
         }
     }
 
-    h("#showbutton").on('click', switchFunc(
+    h("#h-showbutton").on('click', switchFunc(
         function () {
-            h('#showbutton').text('hide')
+            h('#h-showbutton').text('hide')
             showCourseTable();
             enableHighLight();
         },
         function () {
-            h('#showbutton').text('show')
+            h('#h-showbutton').text('show')
             h('#timesheet1, #timesheet2').remove();
         }
     ))
