@@ -34,7 +34,7 @@ function parseCourse() {
     h("div.outer_xkxx_list").each(function (i, item) {
         const title = h(item).find("a.jump")
             .html()
-            .replace(/\(([a-zA-Z0-9]+)\)([^-]+)-(\d\.?\d).+/ig, "$1 $2 $3")
+            .replace(/\(([a-zA-Z0-9]+)\)([^-]+)-([0-9\.]).+/ig, "$1 $2 $3")
             .split(' ')
 
         const [id, name, credit] = title
