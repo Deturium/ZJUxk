@@ -74,8 +74,8 @@ function parseCourse() {
 }
 
 function showCourseTable() {
-    makeTimeSheet(1)
     makeTimeSheet(2)
+    makeTimeSheet(1)
 
     let courses = parseCourse()
 
@@ -113,47 +113,51 @@ function showCourseTable() {
     }
 }
 
-function enableHighLight() {
-    h("#yhgnPage").on('DOMNodeInserted', function () {
-        h('tr.body_tr').on('mouseover', function () {
-            const term  = h(this).find("td.xxq").html()
-            const times = h(this).find("td.sksj").html().split("<br>")
+function highLightOn() {
+    const term  = h().find("td.xxq").html()
+    const times = h().find("td.sksj").html().split("<br>")
 
-            times.forEach(function (time) {
-                const day = time.match(/[一二三四五六日]/)
-                const nth = time.match(/\d+/g)
-                
-                if (!nth.length) return
+    times.forEach(function (time) {
+        const day = time.match(/[一二三四五六日]/)
+        const nth = time.match(/\d+/g)
+        
+        if (!nth.length) return
 
-                for (let k = 0; k < nth.length; k++) {
-                    const highLight = function (num) {
-                        let t = parseInt(nth[k]);
-                        let node = h(`#timesheet${num} .row${t}.col${DayTo[day]}`)
-                        while (node.css('display') === 'none') {
-                            t--
-                            node = h(`#timesheet${num} .row${t}.col${DayTo[day]}`)
-                        }
-                        if (node.html() === '&nbsp;')
-                            node.addClass("selected")
-                        else
-                            node.addClass("conflict")
-                    }
-
-                    if (term.search("春|秋") !== -1) highLight(1)
-                    if (term.search("夏|冬") !== -1) highLight(2)
+        for (let k = 0; k < nth.length; k++) {
+            const highLightItem = function (num) {
+                let t = parseInt(nth[k]);
+                let node = h(`#timesheet${num} .row${t}.col${DayTo[day]}`)
+                while (node.css('display') === 'none') {
+                    t--
+                    node = h(`#timesheet${num} .row${t}.col${DayTo[day]}`)
                 }
-            })
-        });
+                if (node.html() === '&nbsp;')
+                    node.addClass("selected")
+                else
+                    node.addClass("conflict")
+            }
 
-        h('tr.body_tr').on('mouseleave', function () {
-            h(".selected").removeClass("selected");
-            h(".conflict").removeClass("conflict");
-        });
-    });
+            if (term.search("春|秋") !== -1) highLightItem(1)
+            if (term.search("夏|冬") !== -1) highLightItem(2)
+        }
+    })
 }
 
-(function () {
-    h("body").append("<div id='h-showbutton'>show</div><div id='h-container'></div>");
+function highLightOff() {
+    h(".selected").removeClass("selected");
+    h(".conflict").removeClass("conflict");
+}
+
+function enableHighLight() {
+    h('tr.body_tr').on('mouseenter', highLightOn);
+    h('tr.body_tr').on('mouseleave', highLightOff);
+}
+
+;(function () {
+    h("body").append(
+        `<div id='h-showbutton'>show</div>
+         <div id='h-container'></div>`
+    )
 
     const switchFunc = function (func1, func2) {
         let status = true
@@ -171,11 +175,11 @@ function enableHighLight() {
         function () {
             h('#h-showbutton').text('hide')
             showCourseTable();
-            enableHighLight();
+            h("#yhgnPage").on('DOMNodeInserted', enableHighLight);
         },
         function () {
             h('#h-showbutton').text('show')
             h('#timesheet1, #timesheet2').remove();
         }
     ))
-})();
+})()
