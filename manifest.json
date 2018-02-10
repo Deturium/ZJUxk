@@ -1,26 +1,33 @@
 {
     "name": "ZJU选课",
-    "description": "ZJU新选课系统选课插件",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "manifest_version": 2,
-    "icons": {
-
-    },
-    "browser_action": {
-
-    },
-	"content_scripts": [{
-		"js": [ "hQuery.js", "xk.js" ],
-        "css": ["xk.css"],
-		"matches": [ "*://10.203.2.135/*", "*://10.202.78.14/*", "*://10.203.2.136/*" ],
-        "run_at": "document_end"
-	}
-	],
-    "background":{
-        "page":"backg.html"
-    },
+    "description": "ZJU新选课系统选课插件",
+    "icons": {},
+    "author": "Hydrogen",
     "permissions": [
-        "tabs",
-        "http://*/*"
+        "storage"
+    ],
+    "browser_action": {
+        "default_icon": {},
+        "default_title": "ZJUxk",
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "*://10.203.2.135/*",
+                "*://10.202.78.14/*",
+                "*://10.203.2.136/*"
+            ],
+            "js": [
+                "js/hQuery.js",
+                "js/xk.js"
+            ],
+            "css": [
+                "css/xk.css"
+            ],
+            "run_at": "document_end"
+        }
     ]
 }
